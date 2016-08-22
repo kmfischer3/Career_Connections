@@ -1,7 +1,14 @@
 <?php
-
 	session_start();
-	
+	//checkLogin();
+	//$_SESSION["userid"] = 4;
+	//function checkLogin() {
+	//	if ( !isset($_SESSION["userid"]) ) {
+	//		header('Location: /~kristina/inspir_project/sandbox/login.php');
+	//		//echo "redirected";
+	//	}
+	//	return;
+	//}
 	function message() {
 		if (isset($_SESSION["message"])) {
 			$output = "<div class=\"message\">";
@@ -14,7 +21,6 @@
 			return $output;
 		}
 	}
-
 	function errors() {
 		if (isset($_SESSION["errors"])) {
 			$errors = $_SESSION["errors"];
