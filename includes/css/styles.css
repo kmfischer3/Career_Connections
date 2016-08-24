@@ -1,5 +1,6 @@
 .content {
 	padding-top: 60px;
+	padding-bottom: 60px;
 }
 
 .panel {
@@ -16,3 +17,21 @@
 	right:5%;
 	left:5%;
 }
+.navbar-fixed-bottom {
+
+}
+.media-object {
+	max-width: 64px;
+	max-height: 64px;
+}
+.glyphicon-heart-empty {
+	color: #ff6666;
+}
+.glyphicon-heart-empty {
+	color: #ff6666;
+}
+.popover-content {
+   	height: 300px;
+   	overflow-y: scroll;
+}
+
