@@ -13,13 +13,30 @@
   $response["status_code"] = "UNKNOWN";
   $response["companies"] = array();
 
+  $attributes = ( isset($_SESSION['attributes']) ) ? $_SESSION['attributes'] : 0;
+  $searchterm = ( isset($_SESSION['searchterm']) ) ? $_SESSION['searchterm'] : null;
+
   if (mysqli_connect_errno()) {
       $response["status_code"] = "SERVER_ERROR";
   } 
 
   else {
 
-        $all_companies = mysqli_query($connection, "SELECT * FROM companies;");
+	$query = 
+		"
+		SELECT * FROM companies 
+		WHERE attributes & $attributes = $attributes
+		";
+
+	if ( !empty($searchterm) ) {
+		
+		$query .= " AND name LIKE '%$searchterm%'";
+
+	} 
+
+	$query .= ";";
+
+        $all_companies = mysqli_query($connection, $query);
 
         if ( !$all_companies ){
         	$response["status_code"] = "SQL_ERROR";

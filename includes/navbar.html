@@ -8,7 +8,7 @@
 		<a href="#" id="popover" class="navbar-toggle collapsed"><span class="glyphicon glyphicon-search"></span></a>
 		<div id="popover-head" class="hide">Filter Results</div>
 		<div id="popover-content" class="hide">
-			<form action="index.php" method="get">
+			<form id="search_form" onsubmit="transformFormData();">
 				<div class="form-group">
 				  <label for="searchterm">Search:</label>
 				  <input type="text" class="form-control" id="searchterm">
@@ -16,74 +16,79 @@
 				<div class="form-group">
 				  	<label for="day">Day(s):</label>
 					<div class="checkbox">
-					  <label><input type="checkbox" value="">Monday, Sept. 9</label>
+					  <label><input type="checkbox" value="" id="d1">Monday, Sept. 9</label>
 					</div>
 					<div class="checkbox">
-					  <label><input type="checkbox" value="">Wednesday, Sept. 11</label>
+					  <label><input type="checkbox" value="" id="d2">Wednesday, Sept. 11</label>
 					</div>
 					<div class="checkbox">
-					  <label><input type="checkbox" value="">Thursday, Sept. 12</label>
+					  <label><input type="checkbox" value="" id="d3">Thursday, Sept. 12</label>
 					</div>
 				</div>
 				<div class="form-group">
 				  	<label for="major">Major(s):</label>
 					<div class="checkbox">
-					  <label><input type="checkbox" value="">ABC</label>
+					  <label><input type="checkbox" value="" id="m1">ABC</label>
 					</div>
 					<div class="checkbox">
-					  <label><input type="checkbox" value="">DEF</label>
+					  <label><input type="checkbox" value="" id="m2">DEF</label>
 					</div>
 					<div class="checkbox">
-					  <label><input type="checkbox" value="">GHI</label>
+					  <label><input type="checkbox" value="" id="m3">GHI</label>
 					</div>
 					<div class="checkbox">
-					  <label><input type="checkbox" value="">JKL</label>
+					  <label><input type="checkbox" value="" id="m4">JKL</label>
 					</div>
 					<div class="checkbox">
-					  <label><input type="checkbox" value="">MNO</label>
+					  <label><input type="checkbox" value="" id="m5">MNO</label>
 					</div>
 					<div class="checkbox">
-					  <label><input type="checkbox" value="">PQR</label>
+					  <label><input type="checkbox" value="" id="m6">PQR</label>
 					</div>
 					<div class="checkbox">
-					  <label><input type="checkbox" value="">STU</label>
+					  <label><input type="checkbox" value="" id="m7">STU</label>
 					</div>
 					<div class="checkbox">
-					  <label><input type="checkbox" value="">VWX</label>
+					  <label><input type="checkbox" value="" id="m8">VWX</label>
 					</div>
 					<div class="checkbox">
-					  <label><input type="checkbox" value="">YZ1</label>
+					  <label><input type="checkbox" value="" id="m9">YZ1</label>
 					</div>
 				</div>
 				<div class="form-group">
 				  	<label for="position">Position(s):</label>
 					<div class="checkbox">
-					  <label><input type="checkbox" value="">Internship</label>
+					  <label><input type="checkbox" value="" id="p1">Internship</label>
 					</div>
 					<div class="checkbox">
-					  <label><input type="checkbox" value="">Full-Time</label>
+					  <label><input type="checkbox" value="" id="p2">Full-Time</label>
 					</div>
 					<div class="checkbox">
-					  <label><input type="checkbox" value="">Part-Time</label>
+					  <label><input type="checkbox" value="" id="p3">Part-Time</label>
 					</div>
 					<div class="checkbox">
-					  <label><input type="checkbox" value="">Co-Op</label>
+					  <label><input type="checkbox" value="" id="p4">Co-Op</label>
 					</div>
 				</div>
 				<div class="form-group">
 				  	<label for="citizenship">Citizenship:</label>
 					<div class="checkbox">
-					  <label><input type="checkbox" value="">Citizen</label>
+					  <label><input type="checkbox" value="" id="c1">Citizen</label>
 					</div>
 					<div class="checkbox">
-					  <label><input type="checkbox" value="">Resident</label>
+					  <label><input type="checkbox" value="" id="c2">Resident</label>
 					</div>
 					<div class="checkbox">
-					  <label><input type="checkbox" value="">Greencard</label>
+					  <label><input type="checkbox" value="" id="c3">Greencard</label>
 					</div>
 				</div>
 				<div class="form-group">
+					<div class="col-xs-6">
+					  <input class="btn btn-danger" type="submit" value="Clear Filters" onclick="submitForm(0, '');">
+					</div>
+					<div class="col-xs-6">
 					  <input class="btn btn-primary" type="submit" value="Submit">
+					</div>
 				</div>
 			</form>
 		</div>
@@ -106,22 +111,37 @@ $('#popover').popover({
     }
 });
 
-function submitForm() {
+function transformFormData() {
 
-	var userId = 5;
+    var searchterm = document.getElementById("search_form").elements["searchterm"].value;    
 
-	$.ajax({
-		method: "GET",
-		url: "./index.php",
-		data: {
-			cmd: searchterm,
-			userId: 2,
-			gameId: 3
-		}
-	}).success(function(data) {
-		//var json = JSON.parse(data);
-		//alert(json.message);
-		location.reload();
-	});
+    var attribute_int = 0;
+    var attributes = document.getElementById("search_form").elements;
+
+    //iterate through form elements (excluding first and last 2 because those are searchterm, submit, and clear). If checked, append a 1 to the bitmask; else, 0.
+    //TODO: separate logic for the different form groups for better/insuitive results
+    for ( var i = 1; i < attributes.length-2; i++ ) {
+	attribute_int = (attribute_int << 1);	
+	if ( attributes[i].checked ) {
+		attribute_int = (attribute_int | 1);
+	}
+    }
+
+    submitForm(attribute_int, searchterm);
+
+    return false;
+}
+
+function submitForm(attribute_int, searchterm) {
+
+    var xmlHttp = new XMLHttpRequest();
+    xmlHttp.onreadystatechange = function() { 
+        if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
+            location.reload();
+    }
+    xmlHttp.open("GET", "../sandbox/capture_attr.php?attributes="+attribute_int+"&searchterm="+searchterm, true); // true for asynchronous 
+    xmlHttp.send(null);
+
+    return false;
 }
 </script>
