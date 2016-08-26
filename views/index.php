@@ -34,7 +34,7 @@
 
 	} 
 
-	$query .= ";";
+	$query .= " ORDER BY name ASC;";
 
         $all_companies = mysqli_query($connection, $query);
 
@@ -69,11 +69,8 @@ if ($response["companies"]){
 
 		echo "
 		<div class=\"media\">
-	  		<div class=\"media-left\">
-	      			<img class=\"media-object\" src=\"../includes/images/linux.png\" alt=\"...\">
-	  		</div>
 	  		<div class=\"media-body\">
-				<a href=\"company_profile?id=".$id."\">
+				<a href=\"company_profile.php?id=".$id."\">
 	    				<h4 class=\"media-heading\">".$name."</h4>
 				</a>
 	    			".$lorem_med."

@@ -1,6 +1,7 @@
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-   <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
-   <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet">
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+<script src="/~kristina/Career_Connections/includes/js/scripts.js"></script>
+<link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet">
 
 <nav class="navbar navbar-default navbar-fixed-top">
 <div class="container">
@@ -100,6 +101,7 @@
 </nav>
 
 <script type="text/javascript">
+
 $('#popover').popover({ 
     placement: 'left',
     html : true,
@@ -111,37 +113,4 @@ $('#popover').popover({
     }
 });
 
-function transformFormData() {
-
-    var searchterm = document.getElementById("search_form").elements["searchterm"].value;    
-
-    var attribute_int = 0;
-    var attributes = document.getElementById("search_form").elements;
-
-    //iterate through form elements (excluding first and last 2 because those are searchterm, submit, and clear). If checked, append a 1 to the bitmask; else, 0.
-    //TODO: separate logic for the different form groups for better/insuitive results
-    for ( var i = 1; i < attributes.length-2; i++ ) {
-	attribute_int = (attribute_int << 1);	
-	if ( attributes[i].checked ) {
-		attribute_int = (attribute_int | 1);
-	}
-    }
-
-    submitForm(attribute_int, searchterm);
-
-    return false;
-}
-
-function submitForm(attribute_int, searchterm) {
-
-    var xmlHttp = new XMLHttpRequest();
-    xmlHttp.onreadystatechange = function() { 
-        if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
-            location.reload();
-    }
-    xmlHttp.open("GET", "../sandbox/capture_attr.php?attributes="+attribute_int+"&searchterm="+searchterm, true); // true for asynchronous 
-    xmlHttp.send(null);
-
-    return false;
-}
 </script>
