@@ -2,13 +2,21 @@
 <?php require_once("../includes/db_connection.php"); ?>
 <?php require_once("../includes/functions.php"); ?>
 <?php include("../includes/page_top.php");?>
-<?php include("../includes/loremipsum.php");?>
 
-<div class="content">
+<style>
+/*TODO move styling to css folder*/
+svg {
+    width: 100%;
+    height: 100%;
+    background-image: url("../includes/images/trade-show-map-example.png");
+    background-repeat: no-repeat;
+    background-size: contain;
+}
+</style>
+
+<svg>
 
 <?php 
-
-//echo "<br><br><h1>".$_SESSION['height']."</h1>";
 
   // Set up json object
   $response = array();
@@ -23,12 +31,14 @@
   } 
 
   else {
-
+	
+	
 	$query = 
 		"
 		SELECT * FROM companies 
 		WHERE attributes & $attributes = $attributes
 		";
+	
 
 	if ( !empty($searchterm) ) {
 		
@@ -36,7 +46,7 @@
 
 	} 
 
-	$query .= " ORDER BY name ASC;";
+	$query .= " ;";
 
         $all_companies = mysqli_query($connection, $query);
 
@@ -58,47 +68,54 @@
 //print json object for debugging
 //printf("%s", json_encode($response));
 
-
 // if the query returned results, display them.
-// else display error message or "no results"
+// else display map with no highlighting
 if ($response["companies"]){
 
 	foreach ($response["companies"] as $value) {
 
-		$id 	= $value['id'];
-		$name 	= $value['name'];
-		$booth 	= $value['booth']; 
+		$x_coord 	= $value['x'];
+		$y_coord 	= $value['y'];
 
-		echo "
-		<div class=\"media\">
-	  		<div class=\"media-body\">
-				<a href=\"company_profile.php?id=".$id."\">
-	    				<h4 class=\"media-heading\">".$name."</h4>
-				</a>
-	    			".$lorem_med."
-	  		</div>
-	  		<div class=\"media-right\">
-				<button type=\"button\" class=\"btn btn-default btn-lg\" style=\"border:none;\">
-				 	<span class=\"glyphicon glyphicon-heart-empty\" aria-hidden=\"true\"></span>
-				</button>
-	  		</div>
-		</div>
-		";
-	}
-
-} else {
-
-	if ($response["status_code"] != "OK") {
-		echo $response["status_code"];
-	} else {
-		//query was ok but returned no results
-		echo "No Results.";
+		echo "<rect x=\"$x_coord\" y=\"$y_coord\" width=\"36\" height=\"18\" style=\"fill:yellow;fill-opacity:0.5;\" />";	
+		
 	}
 }
+// if the user is looking for a specific booth (button from company profile), highlight it in a different color
+if ( isset($_GET["boothid"]) ){
+
+	$id = $_GET["boothid"];
+	$query2 = 
+		"
+		SELECT x,y FROM booths 
+		WHERE id = $id;
+		";
+	
+        $result = mysqli_query($connection, $query2);
+
+        if ( !$result ){
+        	$response["status_code"] = "SQL_ERROR";
+            	$response["sql_msg"] = mysqli_error($connection);
+		printf("%s", json_encode($response));
+        }
+        else {
+        		
+		$response["status_code"] = "OK";
+		$booth = mysqli_fetch_assoc($result);
+
+		$x_coord 	= $booth['x'];
+		$y_coord 	= $booth['y'];
+
+		echo "<rect x=\"$x_coord\" y=\"$y_coord\" width=\"36\" height=\"18\" style=\"fill:red;fill-opacity:0.5;\" />";			
+
+        }
+	
+}
+
 
 ?>
+</svg>
 
-</div>
 
 <?php include("../includes/button-add.html");?>
 <?php include("../includes/page_bottom.php");?>

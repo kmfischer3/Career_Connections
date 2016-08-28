@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" style="width:100%;height:100%;">
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -8,7 +8,7 @@
   <link rel="stylesheet" href="../includes/css/styles.css">
   <title>Career Fair 2016</title>
 </head>
-<body>
+<body style="width:100%;height:100%;margin-top:70px;">
 
 <?php include("navbar.html");?>
 

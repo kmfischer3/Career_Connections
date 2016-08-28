@@ -76,17 +76,17 @@ if ($response["company_data"]){
 					<tr>
 						<td>Monday, Sept 19</td>
 						<td>
-										<button type=\"button\" class=\"btn btn-info btn-md\">
+										<a href=\"map.php?boothid=$booth\" type=\"button\" class=\"btn btn-info btn-md\">
 										  	<span class=\"glyphicon glyphicon-map-marker\" aria-hidden=\"true\"></span> Booth #$booth
-										</button>
+										</a>
 						</td>
 					</tr>
 					<tr>
 						<td>Tuesday, Sept 20</td>
 						<td>
-										<button type=\"button\" class=\"btn btn-info btn-md\">
+										<a href=\"map.php?boothid=$booth\" type=\"button\" class=\"btn btn-info btn-md\">
 										  	<span class=\"glyphicon glyphicon-map-marker\" aria-hidden=\"true\"></span> Booth #$booth
-										</button>
+										</a>
 						</td>
 					</tr>
 				</table>
