@@ -8,7 +8,7 @@
 svg {
     width: 100%;
     height: 100%;
-    background-image: url("../includes/images/trade-show-map-example.png");
+    background-image: url("../includes/images/day1.png");
     background-repeat: no-repeat;
     background-size: 100% 100%;
 }
@@ -18,7 +18,19 @@ rect {
 }
 </style>
 
-<?php include("../includes/button-clearfilters.php");?>
+<div class="container">
+
+	<nav aria-label="...">
+	  <ul class="pager">
+	    <li class="previous disabled"><a href="#"><span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span></a></li>
+	    	<h3 style="text-align:center;display:inline-block;">Monday<br><small>September 19, 2016</small></h3>
+	    <li class="next"><a href="#"><span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span></a></li>
+	  </ul>
+	</nav>
+
+	<?php include("../includes/button-clearfilters.php");?>
+
+</div>
 
 <svg id="mysvg">
 
@@ -35,19 +47,28 @@ rect {
   $attributes = ( isset($_SESSION['attributes']) ) ? $_SESSION['attributes'] : 0;
   $searchterm = ( isset($_SESSION['searchterm']) ) ? $_SESSION['searchterm'] : null;
 
+if ( !empty($attributes) || !empty($searchterm) ){
+
   if (mysqli_connect_errno()) {
       $response["status_code"] = "SERVER_ERROR";
   } 
 
   else {
 	
-	
-	$query = 
-		"
-		SELECT * FROM companies 
-		WHERE attributes & $attributes = $attributes
+	$query = "	SELECT unit_x,unit_y 
+				FROM booth 
+				LEFT JOIN day_company_booth 
+					ON booth.id = day_company_booth.booth_id
+				LEFT JOIN company 
+					ON day_company_booth.company_id = company.id			
+			WHERE day_company_booth.day_id = 1
 		";
-	
+
+	if ( !empty($attributes) ) {
+		
+		$query .= " AND company.attributes & $attributes = $attributes";
+
+	} 
 
 	if ( !empty($searchterm) ) {
 		
@@ -74,17 +95,17 @@ rect {
         }
   }
 
-//print json object for debugging
-//printf("%s", json_encode($response));
+  //print json object for debugging
+  //printf("%s", json_encode($response));
 
-// if the query returned results, display them.
-// else display map with no highlighting
-if ($response["companies"]){
+  // if the query returned results, display them.
+  // else display map with no highlighting
+  if ($response["companies"]){
 
 	foreach ($response["companies"] as $value) {
 
-		$x_coord 	= $value['x']*$x_scale_factor;
-		$y_coord 	= $value['y']*$y_scale_factor;
+		$x_coord 	= $value['unit_x']*$x_scale_factor;
+		$y_coord 	= $value['unit_y']*$y_scale_factor;
 
 		$width 		= 8*$x_scale_factor;
 		$height 	= 2*$y_scale_factor;
@@ -92,14 +113,16 @@ if ($response["companies"]){
 		echo "<rect x=\"$x_coord\" y=\"$y_coord\" width=\"$width\" height=\"$height\"/>";	
 		
 	}
+  }
 }
+
 // if the user is looking for a specific booth (button from company profile), highlight it in a different color
 if ( isset($_GET["boothid"]) ){
 
 	$id = $_GET["boothid"];
 	$query2 = 
 		"
-		SELECT x,y FROM booths 
+		SELECT unit_x,unit_y FROM booth 
 		WHERE id = $id;
 		";
 	
@@ -115,10 +138,13 @@ if ( isset($_GET["boothid"]) ){
 		$response["status_code"] = "OK";
 		$booth = mysqli_fetch_assoc($result);
 
-		$x_coord 	= $booth['x'];
-		$y_coord 	= $booth['y'];
+		$x_coord 	= $booth['unit_x']*$x_scale_factor;
+		$y_coord 	= $booth['unit_y']*$y_scale_factor;
 
-		echo "<rect x=\"$x_coord\" y=\"$y_coord\" width=\"36\" height=\"18\" style=\"fill:red;fill-opacity:0.5;\" />";			
+		$width 		= 8*$x_scale_factor;
+		$height 	= 2*$y_scale_factor;
+
+		echo "<rect x=\"$x_coord\" y=\"$y_coord\" width=\"$width\" height=\"$height\" style=\"fill:red;fill-opacity:0.5;\" />";			
 
         }
 	

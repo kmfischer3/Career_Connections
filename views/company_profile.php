@@ -23,7 +23,13 @@
 
 		$id = $_GET["id"];		
 		
-		$result = mysqli_query($connection, "SELECT * FROM companies WHERE id = $id;");
+		$query = 
+			"
+			SELECT * FROM company
+			WHERE id = $id;
+			";
+
+		$result = mysqli_query($connection, $query);
 
 		if ( !$result ){
 			$response["status_code"] = "SQL_ERROR";
@@ -50,81 +56,30 @@
 
 // if the query returned results, display them.
 // else display error message or "no results"
+$days = array();
 if ($response["company_data"]){
 
-	foreach ($response["company_data"] as $value) {
+		$value = $response["company_data"][0];
 
 		$id 		= $value['id'];
 		$name 		= $value['name'];
-		$booth 		= $value['booth']; 
+		//$booth 		= $response["company_data"]['booth_id']; 
 		$attributes 	= $value['attributes'];
 
-		echo "
-		<div class=\"page-header\">
-	  		<h1>$name <br><small>Subtitle</small></h1>
-		</div>
-		<br>
-		<div class=\"attributes-section\">
+	
+		$location_query = "SELECT day_id, booth_id from day_company_booth WHERE company_id = $id;";
 
-			<div>
-				<h4><b>Location</b></h4>
-				<table class=\"table\">
-					<tr>
-						<th>Day</th>
-						<th>Map</th>
-					</tr>
-					<tr>
-						<td>Monday, Sept 19</td>
-						<td>
-										<a href=\"map.php?boothid=$booth\" type=\"button\" class=\"btn btn-info btn-md\">
-										  	<span class=\"glyphicon glyphicon-map-marker\" aria-hidden=\"true\"></span> Booth #$booth
-										</a>
-						</td>
-					</tr>
-					<tr>
-						<td>Tuesday, Sept 20</td>
-						<td>
-										<a href=\"map.php?boothid=$booth\" type=\"button\" class=\"btn btn-info btn-md\">
-										  	<span class=\"glyphicon glyphicon-map-marker\" aria-hidden=\"true\"></span> Booth #$booth
-										</a>
-						</td>
-					</tr>
-				</table>
-			</div>
+		$result = mysqli_query($connection, $location_query);
 
-			<br>
-
-			<div>
-				<h4><b>Candidate Requirements</b></h4>
-				<table class=\"table\">
-					<tr>
-						<th>Major</th>
-						<td>ABC<br>DEF</td>
-					</tr>
-					<tr>
-						<th>Citizenship</th>
-						<td>US Citizen<br>Resident</td>
-					</tr>
-				</table>
-			</div>
-			
-			<div>
-				<h4><b>Position Info</b></h4>
-				<table class=\"table\">
-					<tr>
-						<th>Position</th>
-						<td>Co-Op<br>Internship</td>
-					</tr>
-				</table>
-			</div>
-
-		</div>
-		<div class=\"well well-lg\">
-			<h4>More about $name <br><br><small>".$lorem_long."</small></h4>
-			<a href=\"#\">Website</a>
-		</div>
-		";
-	}
+		if ( !$result ){
+			echo "SQL_ERROR";
+		}
+		else {
+			// Add each info to the day object          
+			while($day = mysqli_fetch_assoc($result)) {
+			    	array_push($days, $day);
+			}
+		}
 
 } else {
 
@@ -135,8 +90,103 @@ if ($response["company_data"]){
 		echo "No Results.";
 	}
 }
-
 ?>
+
+<div class="page-header">
+	  <h1><?php echo $name; ?><br><small>(Subtitle)</small></h1>
+</div>
+<br>
+<div class="attributes-section">
+
+	<div>
+		<h4><b>Location</b></h4>
+		<table class="table">
+			<tr>
+				<th>Day</th>
+				<th>Map</th>
+			</tr>
+
+<?php
+for($i = 0; $i < sizeof($days); $i++){
+
+	$booth = $days[$i]["booth_id"];
+
+	if ($days[$i]["day_id"] == 1) {
+
+		echo "	<tr>
+				<td>Monday, Sept. 19</td>
+				<td>
+					<a href=\"day1.php?boothid=$booth\" type=\"button\" class=\"btn btn-info btn-md\">
+						<span class=\"glyphicon glyphicon-map-marker\" aria-hidden=\"true\"></span> Booth #$booth
+					</a>
+				</td>
+			</tr>
+		";
+
+	} else if ($days[$i]["day_id"] == 2) {
+
+		echo "	<tr>
+				<td>Wednesday, Sept. 21</td>
+				<td>
+					<a href=\"day2.php?boothid=$booth\" type=\"button\" class=\"btn btn-info btn-md\">
+						<span class=\"glyphicon glyphicon-map-marker\" aria-hidden=\"true\"></span> Booth #$booth
+					</a>
+				</td>
+			</tr>
+		";
+
+	} else {
+
+		echo "	<tr>
+				<td>Wednesday, Sept. 28</td>
+				<td>
+					<a href=\"day3.php?boothid=$booth\" type=\"button\" class=\"btn btn-info btn-md\">
+						<span class=\"glyphicon glyphicon-map-marker\" aria-hidden=\"true\"></span> Booth #$booth
+					</a>
+				</td>
+			</tr>
+		";
+
+	}
+}
+?>
+
+
+		</table>
+	</div>
+
+	<br>
+
+	<div>
+		<h4><b>Candidate Requirements</b></h4>
+		<table class="table">
+			<tr>
+				<th>Major</th>
+				<td>ABC<br>DEF</td>
+			</tr>
+			<tr>
+				<th>Citizenship</th>
+				<td>US Citizen<br>Resident</td>
+			</tr>
+		</table>
+	</div>
+			
+	<div>
+		<h4><b>Position Info</b></h4>
+		<table class="table">
+			<tr>
+				<th>Position</th>
+				<td>Co-Op<br>Internship</td>
+			</tr>
+		</table>
+	</div>
+
+</div>
+<div class="well well-lg">
+		<h4>More about <?php echo $name;?>:<br><br><small><?php echo $lorem_long;?></small></h4>
+		<a href="#">Website</a>
+</div>
+
 
 </div>
 
