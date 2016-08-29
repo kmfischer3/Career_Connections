@@ -105,8 +105,8 @@ function sendBrowserSize() {
 	   type: "POST",
 	   url: "saveBroserSizeSession.php",
 	   data: "width="+myWidth+"&height="+myHeight,
-	   success: function(msg){
-	     alert( "Browser Dimensions Saved" );
+	   error: function(msg){
+	     alert( "Browser Dimensions Not Accessible" );
 	   }
 	 });
 }

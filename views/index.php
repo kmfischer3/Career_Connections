@@ -6,9 +6,10 @@
 
 <div class="content">
 
-<?php 
+<?php include("../includes/button-clearfilters.php");?>
 
-//echo "<br><br><h1>".$_SESSION['height']."</h1>";
+<?php 
+	//echo "window: ".$_SESSION['width']." x ".$_SESSION['height']."<br>x_scale_factor: ".$_SESSION['x_scale_factor']."<br>y_scale_factor: ".$_SESSION['y_scale_factor']."<br>";
 
   // Set up json object
   $response = array();
@@ -26,7 +27,7 @@
 
 	$query = 
 		"
-		SELECT * FROM companies 
+		SELECT * FROM company 
 		WHERE attributes & $attributes = $attributes
 		";
 

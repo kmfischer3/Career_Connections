@@ -9,13 +9,6 @@
 
 </div>
 
-<script>
-	$(document).ready(function()
-	{
-	    sendBrowserSize();
-	});
-</script>
-
 <?php include("../includes/button-add.html");?>
 <?php include("../includes/page_bottom.php");?>
 
